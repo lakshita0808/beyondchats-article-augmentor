@@ -1,0 +1,4 @@
+node-script/.env
+node-script/.env.local
+.env
+*.env
