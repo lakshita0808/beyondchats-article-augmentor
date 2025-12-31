@@ -2,38 +2,40 @@
 
 To allow your Vercel frontend to access your Laravel API, you need to configure CORS.
 
-## Quick Fix (Laravel 10+)
+## Quick Fix (Laravel 11+)
+
+Laravel 11+ has **built-in CORS support** - no package needed!
 
 If your Laravel backend is at `/Users/lakshitajawandhiya/Desktop/beyondchats-backend`:
 
-### Option 1: Use Laravel's built-in CORS (Recommended)
+### Step 1: Publish CORS config (if not already done)
 
-1. **Install CORS package** (if not already installed):
-   ```bash
-   cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
-   composer require fruitcake/laravel-cors
-   ```
+```bash
+cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
+php artisan config:publish cors
+```
 
-2. **Publish CORS config**:
-   ```bash
-   php artisan config:publish cors
-   ```
+### Step 2: Verify `config/cors.php`
 
-3. **Edit `config/cors.php`**:
-   ```php
-   'allowed_origins' => ['*'], // Or specify: ['https://your-vercel-app.vercel.app']
-   'allowed_origins_patterns' => [],
-   'allowed_headers' => ['*'],
-   'allowed_methods' => ['*'],
-   'exposed_headers' => [],
-   'max_age' => 0,
-   'supports_credentials' => false,
-   ```
+Make sure it has:
+```php
+'allowed_origins' => ['*'], // Allows all origins (or specify: ['https://your-vercel-app.vercel.app'])
+'allowed_origins_patterns' => [],
+'allowed_headers' => ['*'],
+'allowed_methods' => ['*'],
+'exposed_headers' => [],
+'max_age' => 0,
+'supports_credentials' => false,
+```
 
-4. **Clear config cache**:
-   ```bash
-   php artisan config:clear
-   ```
+### Step 3: Clear config cache
+
+```bash
+php artisan config:clear
+php artisan config:cache
+```
+
+**That's it!** Laravel 11+ handles CORS automatically via middleware.
 
 ### Option 2: Simple Middleware (If CORS package doesn't work)
 
