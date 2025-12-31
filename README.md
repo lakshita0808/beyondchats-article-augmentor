@@ -6,24 +6,21 @@ An end-to-end demo of an **autonomous article augmentor** for BeyondChats:
 - **Node agent (Node.js script)** enriches articles using SerpAPI + OpenAI and writes back to the backend.
 - **React + Vite frontend** lets you browse articles and compare **original vs updated** content.
 
-This README is structured to match the assignment requirements: **local setup**, **data-flow / architecture diagram**, and a placeholder for the **live link**.
+This README is structured to match the assignment requirements: **local setup**, **data-flow / architecture diagram**, and the **live deployment link**.
 
 ---
 
 ## Live Link (Frontend)
 
-> Replace this section with your actual deployed URL before submission.
+- **Deployed frontend URL:** [https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/](https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/)
 
-- **Deployed frontend URL:** `https://your-deployment-url-here.com`
-- The live app should:
-  - Fetch articles from your backend (or a hosted API).
-  - Show **original article** and **updated article** in the same UI (already implemented in the React app).
+The live app:
+- ✅ Fetches articles from the backend API (via ngrok tunnel)
+- ✅ Shows **original article** and **updated article** side-by-side with tabbed interface
+- ✅ Displays article status badges (Enhanced / Pending)
+- ✅ Responsive design with modern UI
 
-Suggested hosting options:
-
-- **Vercel** (recommended for Vite/React)
-- **Netlify**
-- **GitHub Pages** (with a small Vite config tweak if needed)
+**Note:** The backend is currently exposed via ngrok tunnel. For production, consider hosting the Laravel backend on Railway, Render, or DigitalOcean.
 
 ---
 
@@ -213,23 +210,19 @@ Your ngrok URL is: **`https://exosporous-jeana-hyperconfidently.ngrok-free.dev`*
 
 ### Step 2: Ensure CORS is Configured in Laravel Backend
 
-Your Laravel backend needs to allow requests from your Vercel domain. See `CORS_SETUP.md` in this repo for detailed instructions.
+Laravel 12 has built-in CORS support. Ensure `config/cors.php` has:
 
-**Quick fix:**
-```bash
-cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
-composer require fruitcake/laravel-cors
-php artisan config:publish cors
-```
-
-Then edit `config/cors.php` and set:
 ```php
 'allowed_origins' => ['*'], // Or your specific Vercel domain
+'allowed_methods' => ['*'],
+'allowed_headers' => ['*'],
 ```
 
-Restart your Laravel server:
+Then clear config cache:
 ```bash
-php artisan serve
+cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
+php artisan config:clear
+php artisan config:cache
 ```
 
 ### Step 3: Keep ngrok Running
@@ -242,9 +235,12 @@ To keep it running:
 ngrok http 8000
 ```
 
-### Step 4: Update README with Live Link
+### Step 4: Verify Deployment
 
-After Vercel deploys, copy your Vercel URL (e.g., `https://beyondchats-article-augmentor.vercel.app`) and update the **Live Link** section at the top of this README.
+After deployment, visit your Vercel URL and verify:
+- Articles load in the Knowledge Queue sidebar
+- Clicking an article shows Original vs Updated tabs
+- Content renders correctly with proper formatting
 
 ---
 
@@ -306,8 +302,8 @@ These choices are documented here so reviewers can see the deliberate UX decisio
   - [x] Intuitive flow: select article → compare original vs updated.
 
 - **Live Link**
-  - [ ] Frontend deployed (Vercel/Netlify/etc.).
-  - [ ] URL added to the **Live Link** section above.
+  - [x] Frontend deployed on Vercel.
+  - [x] URL added to the **Live Link** section above: [https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/](https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/)
 
 - **Code Quality**
   - [x] Clear separation of concerns: backend / agent / frontend.

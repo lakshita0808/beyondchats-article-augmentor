@@ -1,4 +1,21 @@
+# Environment files
 node-script/.env
 node-script/.env.local
 .env
 *.env
+
+# Build artifacts
+frontend/dist/
+frontend/node_modules/
+node-script/node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
