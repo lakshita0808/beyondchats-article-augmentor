@@ -15,10 +15,10 @@ This README is structured to match the assignment requirements: **local setup**,
 - **Deployed frontend URL:** [https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/](https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/)
 
 The live app:
-- ✅ Fetches articles from the backend API (via ngrok tunnel)
-- ✅ Shows **original article** and **updated article** side-by-side with tabbed interface
-- ✅ Displays article status badges (Enhanced / Pending)
-- ✅ Responsive design with modern UI
+- Fetches articles from the backend API (via ngrok tunnel)
+- Shows **original article** and **updated article** side-by-side with tabbed interface
+- Displays article status badges (Enhanced / Pending)
+- Responsive design with modern UI
 
 **Note:** The backend is currently exposed via ngrok tunnel. For production, consider hosting the Laravel backend on Railway, Render, or DigitalOcean.
 
@@ -42,45 +42,6 @@ The live app:
 - **Frontend (`frontend/`):**
   - Calls backend API to list articles.
   - Lets you select one article and view **Original** vs **Updated** content in a clean UI.
-
-### Architecture / Data Flow Diagram
-
-```mermaid
-flowchart LR
-    subgraph Web[Browser]
-        UI[React + Vite\nArticleList & ArticleView]
-    end
-
-    subgraph Laravel[Laravel Backend\n(beyondchats-backend)]
-        API[REST API\n/api/articles]
-        DB[(SQLite DB\narticles table)]
-        CMD[Artisan Command\nscrape:beyondchats]
-    end
-
-    subgraph Agent[Node Agent\n(node-script)]
-        FETCH[Fetch articles\nfrom API]
-        SERP[SerpAPI\nsearch]
-        SCRAPE[Scrape reference\narticles]
-        OPENAI[OpenAI\nrewrite]
-        UPDATE[PUT updated_content\nback to API]
-    end
-
-    CMD --> DB
-    DB <--> API
-
-    UI <--> API
-
-    FETCH --> SERP --> SCRAPE --> OPENAI --> UPDATE
-    UPDATE --> API --> DB
-```
-
-**End-to-end flow:**
-
-1. **Seed data**: Laravel command `php artisan scrape:beyondchats --limit=5` scrapes original articles into the DB.
-2. **Agent run**: Node script reads articles from `/api/articles`, finds references via SerpAPI, calls OpenAI, then updates `updated_content` and `references`.
-3. **User view**: React frontend reads from `/api/articles` and lets the user compare original vs updated content.
-
----
 
 ## Local Setup Instructions
 
@@ -193,63 +154,6 @@ VITE_API_BASE_URL=http://127.0.0.1:8000/api
 
 ---
 
-## How to Deploy the Frontend (for Live Link)
-
-### Step 1: Configure Vercel Environment Variable
-
-Your ngrok URL is: **`https://exosporous-jeana-hyperconfidently.ngrok-free.dev`**
-
-1. Go to your Vercel project dashboard
-2. Navigate to **Settings → Environment Variables**
-3. Add a new variable:
-   - **Key:** `VITE_API_BASE_URL`
-   - **Value:** `https://exosporous-jeana-hyperconfidently.ngrok-free.dev/api`
-   - **Environment:** Production, Preview, Development (select all)
-4. Click **Save**
-5. Go to **Deployments** tab and click **Redeploy** on the latest deployment (or trigger a new deployment)
-
-### Step 2: Ensure CORS is Configured in Laravel Backend
-
-Laravel 12 has built-in CORS support. Ensure `config/cors.php` has:
-
-```php
-'allowed_origins' => ['*'], // Or your specific Vercel domain
-'allowed_methods' => ['*'],
-'allowed_headers' => ['*'],
-```
-
-Then clear config cache:
-```bash
-cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
-php artisan config:clear
-php artisan config:cache
-```
-
-### Step 3: Keep ngrok Running
-
-**Important:** Your ngrok tunnel must stay running while reviewers test your app. The free tier gives you a persistent URL as long as the process is active.
-
-To keep it running:
-```bash
-# In a terminal (keep it open)
-ngrok http 8000
-```
-
-### Step 4: Verify Deployment
-
-After deployment, visit your Vercel URL and verify:
-- Articles load in the Knowledge Queue sidebar
-- Clicking an article shows Original vs Updated tabs
-- Content renders correctly with proper formatting
-
----
-
-**Note:** For a production setup, you'd want to:
-- Host your Laravel backend on a service like Railway, Render, or DigitalOcean
-- Use a persistent domain instead of ngrok
-- Set up proper CORS for your specific frontend domain
-
----
 
 ## Code Structure Overview
 
@@ -283,31 +187,3 @@ After deployment, visit your Vercel URL and verify:
   - Renders HTML via `dangerouslySetInnerHTML` to preserve rich content from the agent.
 
 These choices are documented here so reviewers can see the deliberate UX decisions behind the implementation.
-
----
-
-## Submission Checklist (for You)
-
-- **Completeness**
-  - [ ] Backend API works and returns articles.
-  - [ ] Node agent successfully updates `updated_content`.
-  - [ ] Frontend shows original vs updated article clearly.
-
-- **ReadMe & Setup Docs**
-  - [x] Root `README.md` with setup + architecture diagram + live link placeholder.
-  - [x] Additional details in `SETUP.md` and `RUN_PROJECT.md`.
-
-- **UI/UX**
-  - [x] Modern UI with gradient background, clear typography, and status badges.
-  - [x] Intuitive flow: select article → compare original vs updated.
-
-- **Live Link**
-  - [x] Frontend deployed on Vercel.
-  - [x] URL added to the **Live Link** section above: [https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/](https://beyondchats-article-augmentor-gezw3bz0e.vercel.app/)
-
-- **Code Quality**
-  - [x] Clear separation of concerns: backend / agent / frontend.
-  - [x] Components are small and focused (`ArticleList`, `ArticleView`).
-  - [x] Environment variables used for configurable URLs and API keys.
-
-
