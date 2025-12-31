@@ -198,40 +198,60 @@ VITE_API_BASE_URL=http://127.0.0.1:8000/api
 
 ## How to Deploy the Frontend (for Live Link)
 
-You can use any static hosting provider; here’s a **Vercel**-friendly flow:
+### Step 1: Configure Vercel Environment Variable
 
-1. **Build the app locally:**
+Your ngrok URL is: **`https://exosporous-jeana-hyperconfidently.ngrok-free.dev`**
 
-   ```bash
-   cd /Users/lakshitajawandhiya/Desktop/beyondchats-article-augmentor/frontend
-   npm install
-   npm run build
-   ```
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings → Environment Variables**
+3. Add a new variable:
+   - **Key:** `VITE_API_BASE_URL`
+   - **Value:** `https://exosporous-jeana-hyperconfidently.ngrok-free.dev/api`
+   - **Environment:** Production, Preview, Development (select all)
+4. Click **Save**
+5. Go to **Deployments** tab and click **Redeploy** on the latest deployment (or trigger a new deployment)
 
-2. **Create a GitHub repo** (public) for this project and push:
+### Step 2: Ensure CORS is Configured in Laravel Backend
 
-   ```bash
-   cd /Users/lakshitajawandhiya/Desktop/beyondchats-article-augmentor
-   git init
-   git remote add origin git@github.com:YOUR_USERNAME/beyondchats-article-augmentor.git
-   git add .
-   git commit -m "Initial commit: BeyondChats Article Augmentor"
-   git push -u origin main
-   ```
+Your Laravel backend needs to allow requests from your Vercel domain. See `CORS_SETUP.md` in this repo for detailed instructions.
 
-   - Commit frequently with meaningful messages (e.g. `feat: add article comparison UI`, `docs: add architecture diagram`).
+**Quick fix:**
+```bash
+cd /Users/lakshitajawandhiya/Desktop/beyondchats-backend
+composer require fruitcake/laravel-cors
+php artisan config:publish cors
+```
 
-3. **On Vercel:**
+Then edit `config/cors.php` and set:
+```php
+'allowed_origins' => ['*'], // Or your specific Vercel domain
+```
 
-   - Import the GitHub repo.
-   - Framework preset: **Vite** (React).
-   - Build command: `npm run build`.
-   - Output directory: `dist`.
-   - Add env var `VITE_API_BASE_URL` pointing to your backend (local tunnel or hosted).
+Restart your Laravel server:
+```bash
+php artisan serve
+```
 
-4. After deploy, paste the generated URL into the **Live Link** section above.
+### Step 3: Keep ngrok Running
 
-You can follow a similar flow for **Netlify** (build: `npm run build`, publish: `dist`).
+**Important:** Your ngrok tunnel must stay running while reviewers test your app. The free tier gives you a persistent URL as long as the process is active.
+
+To keep it running:
+```bash
+# In a terminal (keep it open)
+ngrok http 8000
+```
+
+### Step 4: Update README with Live Link
+
+After Vercel deploys, copy your Vercel URL (e.g., `https://beyondchats-article-augmentor.vercel.app`) and update the **Live Link** section at the top of this README.
+
+---
+
+**Note:** For a production setup, you'd want to:
+- Host your Laravel backend on a service like Railway, Render, or DigitalOcean
+- Use a persistent domain instead of ngrok
+- Set up proper CORS for your specific frontend domain
 
 ---
 

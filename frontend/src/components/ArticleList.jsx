@@ -7,10 +7,18 @@ export default function ArticleList() {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
+    const apiUrl = `${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/articles?per_page=50`;
     axios
-      .get(`${import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'}/articles?per_page=50`)
-      .then(r => setArticles(r.data.data || r.data))
-      .catch(console.error);
+      .get(apiUrl)
+      .then(r => {
+        const articlesData = r.data.data || r.data || [];
+        setArticles(Array.isArray(articlesData) ? articlesData : []);
+      })
+      .catch(err => {
+        console.error('Failed to fetch articles:', err);
+        console.error('API URL was:', apiUrl);
+        setArticles([]);
+      });
   }, []);
 
   return (
